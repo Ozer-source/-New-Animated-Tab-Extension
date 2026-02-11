@@ -10,7 +10,6 @@ Click the puzzle piece icon in the top-right corner of Chrome.
 
 How to Add a Background Without Downloading:
 
-Find a GIF or video you like.
 1.    Open the Background Manager in the extension.
 2.    click on get backgrounds and find one you like
 3.    Right-click it and select Copy image link (or Copy video link).
