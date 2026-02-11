@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>New Tab</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<img class="bg-media bg-image is-active" src="video.gif" alt="background animation" />
+<video class="bg-media bg-video" muted loop autoplay playsinline></video>
+
+<div class="overlay">
+  <form action="https://www.bing.com/search" method="get">
+    <input
+      type="text"
+      name="q"
+      placeholder="Search the web"
+      autofocus
+    />
+  </form>
+  <div
+    id="bookmarksCarousel"
+    class="carousel"
+    aria-label="Bookmarks"
+  >
+    <div class="carousel-controls">
+      <button class="carousel-control-prev" type="button" aria-label="Previous">
+        <span class="carousel-arrow" aria-hidden="true">‹</span>
+      </button>
+      <div class="carousel-inner"></div>
+      <button class="carousel-control-next" type="button" aria-label="Next">
+        <span class="carousel-arrow" aria-hidden="true">›</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<details class="bg-manager" aria-label="Background manager">
+  <summary class="bg-manager-title">Background</summary>
+  <div class="bg-manager-list" role="listbox" aria-label="Background list"></div>
+  <div class="bg-manager-hint">Paste a GIF, image, or video URL</div>
+  <div class="bg-manager-controls">
+    <input class="bg-url-input" type="url" placeholder="Paste image/GIF URL" aria-label="Background URL">
+    <button class="bg-add-url" type="button">Add link</button>
+    <label class="bg-file-label">
+      <input class="bg-file-input" type="file" accept="image/*,video/*" aria-label="Upload background">
+      Add file
+    </label>
+    <a class="bg-reset" href="https://www.desktophut.com/" target="_blank" rel="noreferrer">Get images</a>
+  </div>
+</details>
+
+</body>
+<script src="script.js"></script>
+</html>

@@ -1,0 +1,12 @@
+{
+    "manifest_version": 3,
+    "name": "Animated tab",
+    "permissions": [
+         "bookmarks"
+    ],
+    "version": "1.0",
+    "description": "Animated new tab with flowing water and falling leaves",
+    "chrome_url_overrides": {
+        "newtab": "newtab.html"
+    }
+}
