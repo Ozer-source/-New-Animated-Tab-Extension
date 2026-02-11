@@ -1,10 +1,11 @@
 How to Install
 
 Click the puzzle piece icon in the top-right corner of Chrome.
-1.  Click Manage extensions.
-2.  Turn on Developer mode (top right).
-3.    Click Load unpacked.
-4.    Select the downloaded extension folder.
+1.  Press code and click download zip
+2.  Click Manage extensions.
+3.  Turn on Developer mode (top right).
+4.    Click Load unpacked.
+5.    Select the downloaded extension folder.
 
 
 How to Add a Background Without Downloading:
