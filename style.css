@@ -284,6 +284,17 @@ input::placeholder {
   user-select: text;
 }
 
+.bg-name-input {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 12px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  background: rgba(255, 255, 255, 0.9);
+  color: #111;
+}
+
 .bg-add-url {
   width: 100%;
   padding: 8px 10px;

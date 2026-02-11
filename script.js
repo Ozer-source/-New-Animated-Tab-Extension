@@ -6,6 +6,7 @@ const bgImage = document.querySelector(".bg-image");
 const bgVideo = document.querySelector(".bg-video");
 const bgManager = document.querySelector(".bg-manager");
 const bgList = document.querySelector(".bg-manager-list");
+const bgNameInput = document.querySelector(".bg-name-input");
 const bgUrlInput = document.querySelector(".bg-url-input");
 const bgAddUrlButton = document.querySelector(".bg-add-url");
 const bgFileInput = document.querySelector(".bg-file-input");
@@ -309,9 +310,17 @@ if (bgAddUrlButton && bgUrlInput) {
     const value = bgUrlInput.value.trim();
     if (!value) return;
 
+    const name = bgNameInput?.value.trim();
+
     if (/^data:|^https?:/i.test(value)) {
-      addSource({ type: "url", value, label: value, mediaType: getMediaKind(value) });
+      addSource({
+        type: "url",
+        value,
+        label: name || value,
+        mediaType: getMediaKind(value),
+      });
       bgUrlInput.value = "";
+      if (bgNameInput) bgNameInput.value = "";
     }
   });
 }
@@ -320,11 +329,18 @@ if (bgFileInput) {
   bgFileInput.addEventListener("change", (event) => {
     const [file] = event.target.files || [];
     if (!file) return;
+    const name = bgNameInput?.value.trim();
     const reader = new FileReader();
     reader.onload = () => {
       if (typeof reader.result === "string") {
         const mediaType = file.type.startsWith("video/") ? "video" : "image";
-        addSource({ type: "data", value: reader.result, label: file.name, mediaType });
+        addSource({
+          type: "data",
+          value: reader.result,
+          label: name || file.name,
+          mediaType,
+        });
+        if (bgNameInput) bgNameInput.value = "";
       }
     };
     reader.readAsDataURL(file);
@@ -345,11 +361,18 @@ const handlePaste = async (event) => {
     if (item.kind === "file") {
       const file = item.getAsFile();
       if (!file) continue;
+      const name = bgNameInput?.value.trim();
       const reader = new FileReader();
       reader.onload = () => {
         if (typeof reader.result === "string") {
           const mediaType = file.type.startsWith("video/") ? "video" : "image";
-          addSource({ type: "data", value: reader.result, label: file.name, mediaType });
+          addSource({
+            type: "data",
+            value: reader.result,
+            label: name || file.name,
+            mediaType,
+          });
+          if (bgNameInput) bgNameInput.value = "";
         }
       };
       reader.readAsDataURL(file);
@@ -363,7 +386,14 @@ const handlePaste = async (event) => {
       item.getAsString((text) => {
         const value = text.trim();
         if (/^https?:\/\//i.test(value)) {
-          addSource({ type: "url", value, label: value, mediaType: getMediaKind(value) });
+          const name = bgNameInput?.value.trim();
+          addSource({
+            type: "url",
+            value,
+            label: name || value,
+            mediaType: getMediaKind(value),
+          });
+          if (bgNameInput) bgNameInput.value = "";
         }
       });
       event.preventDefault();

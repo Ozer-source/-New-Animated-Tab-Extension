@@ -1,9 +1,10 @@
 How to Install
 
 Click the puzzle piece icon in the top-right corner of Chrome.
-1.  Press code and click download zip
-2.  Click Manage extensions.
-3.  Turn on Developer mode (top right)
+1.    Press the green button code (in the top right) and click download zip
+2.    unpack the folder
+2.    Click Manage extensions.
+3.    Turn on Developer mode (top right)
 4.    Click Load unpacked.
 5.    Select the downloaded extension folder.
 
