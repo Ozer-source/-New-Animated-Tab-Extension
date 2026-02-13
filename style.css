@@ -21,8 +21,11 @@ html, body {
   transform: translate(-50%, -50%);
   object-fit: cover;
   z-index: -1;
-    filter: saturate(1.1) contrast(1.08) brightness(1.02);
   display: none;
+}
+
+.bg-image {
+  filter: saturate(1.1) contrast(1.08) brightness(1.02);
 }
 
 .bg-media.is-active {

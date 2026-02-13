@@ -169,12 +169,17 @@ const getMediaKind = (value) => {
 const showImageBackground = (src) => {
   if (bgVideo) {
     bgVideo.classList.remove("is-active");
-    bgVideo.pause();
-    bgVideo.removeAttribute("src");
-    bgVideo.load();
+    if (!bgVideo.paused) bgVideo.pause();
+    if (bgVideo.src) {
+      bgVideo.removeAttribute("src");
+      bgVideo.load();
+    }
   }
   if (bgImage) {
-    bgImage.src = src;
+    if (bgImage.src !== src) {
+      bgImage.decoding = "async";
+      bgImage.src = src;
+    }
     bgImage.classList.add("is-active");
   }
 };
@@ -184,10 +189,17 @@ const showVideoBackground = (src) => {
     bgImage.classList.remove("is-active");
   }
   if (bgVideo) {
-    bgVideo.src = src;
+    if (bgVideo.preload !== "metadata") {
+      bgVideo.preload = "metadata";
+    }
+    if (bgVideo.src !== src) {
+      bgVideo.src = src;
+      bgVideo.load();
+    }
     bgVideo.classList.add("is-active");
-    bgVideo.load();
-    bgVideo.play().catch(() => {});
+    if (document.visibilityState === "visible") {
+      bgVideo.play().catch(() => {});
+    }
   }
 };
 
@@ -347,6 +359,15 @@ if (bgFileInput) {
     event.target.value = "";
   });
 }
+
+document.addEventListener("visibilitychange", () => {
+  if (!bgVideo) return;
+  if (document.visibilityState === "hidden") {
+    if (!bgVideo.paused) bgVideo.pause();
+  } else if (bgVideo.classList.contains("is-active")) {
+    bgVideo.play().catch(() => {});
+  }
+});
 
 const handlePaste = async (event) => {
   const target = event.target;
