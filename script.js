@@ -158,6 +158,10 @@ const getLabelFromSource = (source) => {
   }
 };
 
+const preloadCache = new Map();
+const recentlyUsed = [];
+const MAX_CACHE_SIZE = 3;
+
 const getMediaKind = (value) => {
   const lower = value.toLowerCase();
   if (lower.startsWith("data:video/")) return "video";
@@ -166,39 +170,97 @@ const getMediaKind = (value) => {
   return "image";
 };
 
-const showImageBackground = (src) => {
-  if (bgVideo) {
-    bgVideo.classList.remove("is-active");
-    if (!bgVideo.paused) bgVideo.pause();
-    if (bgVideo.src) {
-      bgVideo.removeAttribute("src");
-      bgVideo.load();
+const preloadBackground = (src, kind) => {
+  if (preloadCache.has(src)) return;
+  
+  if (kind === "video") {
+    const video = document.createElement("video");
+    video.src = src;
+    video.preload = "auto";
+    video.muted = true;
+    video.load();
+    preloadCache.set(src, video);
+  } else {
+    const img = new Image();
+    img.src = src;
+    preloadCache.set(src, img);
+  }
+};
+
+const cleanupOldCache = () => {
+  if (preloadCache.size <= MAX_CACHE_SIZE) return;
+  
+  const toKeep = new Set(recentlyUsed);
+  const toDelete = [];
+  
+  for (const [src] of preloadCache) {
+    if (!toKeep.has(src)) {
+      toDelete.push(src);
     }
   }
-  if (bgImage) {
-    if (bgImage.src !== src) {
-      bgImage.decoding = "async";
-      bgImage.src = src;
+  
+  toDelete.forEach(src => {
+    const cached = preloadCache.get(src);
+    if (cached && cached.tagName === "VIDEO") {
+      cached.pause();
+      cached.removeAttribute("src");
+      cached.load();
     }
+    preloadCache.delete(src);
+  });
+};
+
+const toggleFavorite = (index) => {
+  const sources = getStoredSources();
+  if (sources[index]) {
+    sources[index].favorite = !sources[index].favorite;
+    setStoredSources(sources);
+    renderBackgroundList(sources);
+    preloadFavorites(sources);
+  }
+};
+
+const preloadFavorites = (sources) => {
+  sources.forEach(source => {
+    if (source.favorite) {
+      const kind = source.mediaType || getMediaKind(source.value);
+      preloadBackground(source.value, kind);
+    }
+  });
+};
+
+const showImageBackground = (src) => {
+  if (bgVideo && bgVideo.classList.contains("is-active")) {
+    bgVideo.classList.remove("is-active");
+    if (!bgVideo.paused) bgVideo.pause();
+    setTimeout(() => {
+      if (bgVideo.src) {
+        bgVideo.removeAttribute("src");
+        bgVideo.load();
+      }
+    }, 300);
+  }
+  if (bgImage) {
+    bgImage.decoding = "async";
     bgImage.classList.add("is-active");
+    bgImage.src = src;
   }
 };
 
 const showVideoBackground = (src) => {
-  if (bgImage) {
+  if (bgImage && bgImage.classList.contains("is-active")) {
     bgImage.classList.remove("is-active");
   }
   if (bgVideo) {
-    if (bgVideo.preload !== "metadata") {
-      bgVideo.preload = "metadata";
-    }
-    if (bgVideo.src !== src) {
-      bgVideo.src = src;
-      bgVideo.load();
-    }
+    bgVideo.src = src;
+    bgVideo.preload = "auto";
+    bgVideo.load();
     bgVideo.classList.add("is-active");
     if (document.visibilityState === "visible") {
-      bgVideo.play().catch(() => {});
+      const playPromise = bgVideo.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {});
+      }
     }
   }
 };
@@ -209,6 +271,14 @@ const setBackground = (index, sources) => {
   const normalized = ((index % total) + total) % total;
   const source = sources[normalized];
   const kind = source.mediaType || getMediaKind(source.value);
+  
+  // Update recently used list
+  recentlyUsed.unshift(source.value);
+  if (recentlyUsed.length > MAX_CACHE_SIZE) {
+    recentlyUsed.pop();
+  }
+  
+  // Show the background
   if (kind === "video") {
     showVideoBackground(source.value);
   } else {
@@ -220,6 +290,28 @@ const setBackground = (index, sources) => {
     const items = Array.from(bgList.querySelectorAll(".bg-item"));
     items.forEach((item, i) => item.classList.toggle("active", i === normalized));
   }
+  
+  // Preload next background
+  const nextIndex = (normalized + 1) % total;
+  if (sources[nextIndex]) {
+    const nextSource = sources[nextIndex];
+    const nextKind = nextSource.mediaType || getMediaKind(nextSource.value);
+    preloadBackground(nextSource.value, nextKind);
+  }
+  
+  // Preload previous background
+  const prevIndex = (normalized - 1 + total) % total;
+  if (sources[prevIndex] && sources[prevIndex] !== sources[nextIndex]) {
+    const prevSource = sources[prevIndex];
+    const prevKind = prevSource.mediaType || getMediaKind(prevSource.value);
+    preloadBackground(prevSource.value, prevKind);
+  }
+  
+  // Preload all favorites
+  preloadFavorites(sources);
+  
+  // Cleanup old cache after a delay
+  setTimeout(cleanupOldCache, 5000);
 };
 
 const renderBackgroundList = (sources) => {
@@ -227,7 +319,6 @@ const renderBackgroundList = (sources) => {
   bgList.innerHTML = "";
 
   if (!sources.length) {
-    if (bgImage) bgImage.src = "";
     return;
   }
 
@@ -254,6 +345,16 @@ const renderBackgroundList = (sources) => {
     label.className = "bg-label";
     label.textContent = getLabelFromSource(source);
 
+    const favoriteButton = document.createElement("button");
+    favoriteButton.type = "button";
+    favoriteButton.className = "bg-favorite" + (source.favorite ? " is-favorite" : "");
+    favoriteButton.setAttribute("aria-label", source.favorite ? "Unfavorite" : "Favorite");
+    favoriteButton.textContent = "★";
+    favoriteButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      toggleFavorite(index);
+    });
+
     const removeButton = document.createElement("button");
     removeButton.type = "button";
     removeButton.className = "bg-remove";
@@ -262,6 +363,12 @@ const renderBackgroundList = (sources) => {
     removeButton.addEventListener("click", (event) => {
       event.stopPropagation();
       const updated = getStoredSources().filter((_, i) => i !== index);
+      if (updated.length === 0) {
+        setStoredSources(DEFAULT_BG_SOURCES);
+        setActiveIndex(0);
+        renderBackgroundList(DEFAULT_BG_SOURCES);
+        return;
+      }
       setStoredSources(updated);
       const activeIndex = getActiveIndex();
       const nextIndex = activeIndex > index ? activeIndex - 1 : activeIndex;
@@ -271,6 +378,7 @@ const renderBackgroundList = (sources) => {
 
     button.appendChild(thumb);
     button.appendChild(label);
+    button.appendChild(favoriteButton);
     button.appendChild(removeButton);
     button.addEventListener("click", () => setBackground(index, sources));
 
@@ -365,9 +473,32 @@ document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "hidden") {
     if (!bgVideo.paused) bgVideo.pause();
   } else if (bgVideo.classList.contains("is-active")) {
-    bgVideo.play().catch(() => {});
+    const playPromise = bgVideo.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {});
+    }
   }
 });
+
+if (bgVideo) {
+  bgVideo.addEventListener("error", () => {
+    console.error("Video failed to load:", bgVideo.src);
+    const sources = getStoredSources();
+    if (sources.length > 1) {
+      const currentIndex = getActiveIndex();
+      const nextIndex = (currentIndex + 1) % sources.length;
+      setBackground(nextIndex, sources);
+    }
+  });
+
+  bgVideo.addEventListener("loadstart", () => {
+    bgVideo.classList.add("loading");
+  });
+
+  bgVideo.addEventListener("canplay", () => {
+    bgVideo.classList.remove("loading");
+  });
+}
 
 const handlePaste = async (event) => {
   const target = event.target;
