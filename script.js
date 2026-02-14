@@ -10,6 +10,9 @@ const bgNameInput = document.querySelector(".bg-name-input");
 const bgUrlInput = document.querySelector(".bg-url-input");
 const bgAddUrlButton = document.querySelector(".bg-add-url");
 const bgFileInput = document.querySelector(".bg-file-input");
+const bgFilterButton = document.querySelector(".bg-filter-button");
+
+let showOnlyFavorites = false;
 
 const flattenBookmarks = (nodes, acc = []) => {
   for (const node of nodes) {
@@ -215,7 +218,7 @@ const toggleFavorite = (index) => {
   if (sources[index]) {
     sources[index].favorite = !sources[index].favorite;
     setStoredSources(sources);
-    renderBackgroundList(sources);
+    renderBackgroundList(sources, false);
     preloadFavorites(sources);
   }
 };
@@ -314,7 +317,7 @@ const setBackground = (index, sources) => {
   setTimeout(cleanupOldCache, 5000);
 };
 
-const renderBackgroundList = (sources) => {
+const renderBackgroundList = (sources, shouldSetBackground = true) => {
   if (!bgList) return;
   bgList.innerHTML = "";
 
@@ -322,7 +325,20 @@ const renderBackgroundList = (sources) => {
     return;
   }
 
-  sources.forEach((source, index) => {
+  const displaySources = showOnlyFavorites 
+    ? sources.filter(s => s.favorite)
+    : sources;
+
+  if (displaySources.length === 0 && showOnlyFavorites) {
+    const message = document.createElement("div");
+    message.className = "bg-empty-message";
+    message.textContent = "No favorites yet";
+    bgList.appendChild(message);
+    return;
+  }
+
+  displaySources.forEach((source, displayIndex) => {
+    const index = sources.indexOf(source);
     const button = document.createElement("button");
     button.type = "button";
     button.className = "bg-item";
@@ -385,8 +401,20 @@ const renderBackgroundList = (sources) => {
     bgList.appendChild(button);
   });
 
-  const activeIndex = Math.min(getActiveIndex(), sources.length - 1);
-  setBackground(activeIndex, sources);
+  if (shouldSetBackground) {
+    const activeIndex = Math.min(getActiveIndex(), sources.length - 1);
+    setBackground(activeIndex, sources);
+  } else {
+    // Just update active state without reloading background
+    const activeIndex = getActiveIndex();
+    if (bgList) {
+      const items = Array.from(bgList.querySelectorAll(".bg-item"));
+      items.forEach((item, i) => {
+        const index = sources.indexOf(displaySources[i]);
+        item.classList.toggle("active", index === activeIndex);
+      });
+    }
+  }
 };
 
 const addSource = (source) => {
@@ -424,6 +452,27 @@ const ensureDefaultSource = () => {
 
   renderBackgroundList(storedSources);
 };
+
+if (bgFilterButton) {
+  bgFilterButton.addEventListener("click", () => {
+    showOnlyFavorites = !showOnlyFavorites;
+    const icon = bgFilterButton.querySelector(".filter-icon");
+    const text = bgFilterButton.querySelector(".filter-text");
+    
+    if (showOnlyFavorites) {
+      icon.textContent = "★";
+      text.textContent = "Favorites";
+      bgFilterButton.classList.add("active");
+    } else {
+      icon.textContent = "☆";
+      text.textContent = "All";
+      bgFilterButton.classList.remove("active");
+    }
+    
+    const sources = getStoredSources();
+    renderBackgroundList(sources, false);
+  });
+}
 
 if (bgAddUrlButton && bgUrlInput) {
   bgAddUrlButton.addEventListener("click", () => {

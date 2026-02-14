@@ -196,6 +196,36 @@ input::placeholder {
   content: "";
 }
 
+.bg-filter-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 6px 10px;
+  margin-bottom: 8px;
+  font-size: 11px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bg-filter-button:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.bg-filter-button.active {
+  background: rgba(255, 200, 0, 0.3);
+  border-color: rgba(255, 200, 0, 0.6);
+}
+
+.filter-icon {
+  font-size: 14px;
+}
+
 .bg-manager-list {
   display: flex;
   flex-direction: column;
@@ -208,6 +238,14 @@ input::placeholder {
 .bg-manager-hint {
   font-size: 11px;
   opacity: 0.9;
+}
+
+.bg-empty-message {
+  text-align: center;
+  padding: 20px 10px;
+  font-size: 11px;
+  opacity: 0.7;
+  color: #fff;
 }
 
 .bg-item {
