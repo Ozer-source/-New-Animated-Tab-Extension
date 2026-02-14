@@ -165,8 +165,8 @@ input::placeholder {
   position: fixed;
   right: 20px;
   bottom: 20px;
-  width: 220px;
-  max-height: 360px;
+  width: 260px;
+  max-height: 420px;
   padding: 12px;
   border-radius: 14px;
   background: rgba(0, 0, 0, 0.8);
@@ -177,6 +177,7 @@ input::placeholder {
   z-index: 10;
   pointer-events: auto;
   backdrop-filter: blur(8px);
+  overflow: hidden;
 }
 
 .bg-manager-title {
@@ -196,14 +197,19 @@ input::placeholder {
   content: "";
 }
 
+.bg-action-buttons {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
 .bg-filter-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  width: 100%;
-  padding: 6px 10px;
-  margin-bottom: 8px;
+  gap: 4px;
+  flex: 1;
+  padding: 6px 8px;
   font-size: 11px;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -223,6 +229,40 @@ input::placeholder {
 }
 
 .filter-icon {
+  font-size: 14px;
+}
+
+.bg-preload-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  flex: 1;
+  padding: 6px 8px;
+  font-size: 11px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bg-preload-button:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.bg-preload-button.loading {
+  background: rgba(100, 200, 255, 0.3);
+  border-color: rgba(100, 200, 255, 0.6);
+}
+
+.bg-preload-button.loaded {
+  background: rgba(0, 255, 100, 0.3);
+  border-color: rgba(0, 255, 100, 0.6);
+}
+
+.preload-icon {
   font-size: 14px;
 }
 
@@ -251,7 +291,7 @@ input::placeholder {
 .bg-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   padding: 6px;
   border-radius: 10px;
   border: 1px solid transparent;
@@ -292,23 +332,31 @@ input::placeholder {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 100px;
+  max-width: 80px;
   flex: 1 1 auto;
   min-width: 0;
+}
+
+.bg-button-group {
+  display: flex;
+  gap: 3px;
+  margin-left: auto;
+  flex-shrink: 0;
+  align-items: center;
 }
 
 .bg-favorite {
   border: none;
   background: rgba(255, 255, 255, 0.2);
   color: rgba(255, 255, 255, 0.5);
-  width: 22px;
-  height: 22px;
-  min-width: 22px;
-  flex: 0 0 22px;
-  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  flex: 0 0 20px;
+  border-radius: 4px;
   display: grid;
   place-items: center;
-  font-size: 14px;
+  font-size: 11px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -328,15 +376,21 @@ input::placeholder {
   border: none;
   background: rgba(255, 255, 255, 0.3);
   color: #fff;
-  width: 22px;
-  height: 22px;
-  min-width: 22px;
-  flex: 0 0 22px;
-  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  flex: 0 0 20px;
+  border-radius: 4px;
   display: grid;
   place-items: center;
   font-size: 14px;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bg-remove:hover {
+  background: rgba(255, 100, 100, 0.6);
+  transform: scale(1.05);
 }
 
 .bg-manager-controls {

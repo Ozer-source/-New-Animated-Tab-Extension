@@ -38,10 +38,16 @@
 
 <details class="bg-manager" aria-label="Background manager">
   <summary class="bg-manager-title">Background</summary>
-  <button class="bg-filter-button" type="button" title="Filter favorites">
-    <span class="filter-icon">☆</span>
-    <span class="filter-text">All</span>
-  </button>
+  <div class="bg-action-buttons">
+    <button class="bg-filter-button" type="button" title="Filter favorites">
+      <span class="filter-icon">☆</span>
+      <span class="filter-text">All</span>
+    </button>
+    <button class="bg-preload-button" type="button" title="Preload all backgrounds">
+      <span class="preload-icon">⚡</span>
+      <span class="preload-text">Preload</span>
+    </button>
+  </div>
   <div class="bg-manager-list" role="listbox" aria-label="Background list"></div>
   <div class="bg-manager-hint">Paste a GIF, image, or video URL</div>
   <div class="bg-manager-controls">
