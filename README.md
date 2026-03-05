@@ -1,5 +1,5 @@
 How to Install
-<marquee behavior="scroll" direction="left">Welcome to your new tab!</marquee>
+<strong>test!</strong>
 
 1.    Press the green button code (in the top right) and click download zip
 2.    unpack the folder
