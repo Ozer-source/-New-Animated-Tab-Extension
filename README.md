@@ -1,6 +1,5 @@
-How to Install
-<strong>test!</strong>
-
+<details>
+  <summary>How to Install</summary>
 1.    Press the green button code (in the top right) and click download zip
 2.    unpack the folder
 3.    Click the puzzle piece icon in the top-right corner of Chrome.
@@ -8,6 +7,7 @@ How to Install
 6.    Turn on Developer mode (top right)
 7.    Click Load unpacked.
 8.    Select the downloaded extension folder.
+</details>
 
 
 How to Add a Background Without Downloading:
